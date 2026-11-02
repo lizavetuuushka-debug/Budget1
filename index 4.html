@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Тихий бюджет</title>
+<style>
+:root{--bg:#141312;--panel:#1d1b19;--card:#221f1d;--ink:#f2ede8;--mut:#9a938c;--line:#2e2a27;--accent:#d98a63;--accent2:#e8a984;--good:#8fbf8f;--bad:#e08a80;--shadow:0 6px 24px rgba(0,0,0,.35)}
+[data-theme="light"]{--bg:#faf7f4;--panel:#ffffff;--card:#ffffff;--ink:#2b2622;--mut:#8a8078;--line:#eee6de;--accent:#b5714f;--accent2:#c98a68;--good:#5f9e5f;--bad:#c05a4e;--shadow:0 6px 24px rgba(120,90,60,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:150px}
+.app{max-width:520px;margin:0 auto;padding:0 14px}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px;position:sticky;top:0;background:linear-gradient(var(--bg) 80%,transparent);z-index:5}
+h1{font-size:1.35rem;font-weight:700}
+.hbtn{width:42px;height:42px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:18px;cursor:pointer}
+.mrow{display:flex;align-items:center;justify-content:space-between;margin:10px 0 14px}
+.mbtn{width:44px;height:44px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:20px;cursor:pointer}
+.month{text-align:center;font-weight:700;font-size:1.05rem}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.cap{color:var(--mut);font-size:.85rem;margin-bottom:4px}
+.big{font-size:2.2rem;font-weight:800;letter-spacing:-.5px}
+.big.pos{color:var(--good)}.big.neg{color:var(--bad)}
+.sub{color:var(--mut);font-size:.85rem;margin-top:6px}
+.dep-line{color:var(--accent2);font-size:.85rem;margin-top:4px}
+.btnrow{display:flex;gap:10px;margin-top:14px}
+.btn{flex:1;padding:13px;border-radius:14px;border:none;font-size:.95rem;font-weight:600;cursor:pointer}
+.btn.main{background:var(--accent);color:#24150c}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.dcard{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.dtitle{font-weight:700;font-size:1.05rem}
+.dsub{color:var(--mut);font-size:.85rem;margin-top:3px}
+.dval{font-weight:800;font-size:1.3rem;white-space:nowrap}
+.drow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.shead{display:flex;justify-content:space-between;align-items:center;margin:18px 2px 10px}
+.shead h2{font-size:1.05rem}
+.mini{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:8px 14px;font-size:.85rem;cursor:pointer}
+.item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.item .ic{color:var(--mut);font-size:.8rem;margin-top:2px}
+.item .amt{font-weight:700;white-space:nowrap}
+.item .del{color:var(--bad);background:none;border:none;font-size:16px;cursor:pointer;margin-left:8px}
+.tag{display:inline-block;font-size:.72rem;padding:2px 8px;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--accent2);margin-left:6px}
+form{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+label{display:block;font-size:.85rem;color:var(--mut);margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:1rem;outline:none}
+textarea{resize:vertical;min-height:60px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{padding:8px 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:.85rem;cursor:pointer}
+.chip.on{background:var(--accent);color:#24150c;border-color:var(--accent)}
+.bar{height:6px;border-radius:3px;background:var(--panel);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--accent)}
+.empty{color:var(--mut);text-align:center;padding:26px 10px;font-size:.9rem}
+.toast{position:fixed;bottom:170px;left:50%;transform:translateX(-50%);background:var(--accent);color:#24150c;padding:10px 18px;border-radius:14px;font-size:.9rem;font-weight:600;opacity:0;transition:.3s;z-index:20}
+.toast.on{opacity:1}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:15;display:none}
+.sheet-bg.on{display:block}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--bg);border-radius:24px 24px 0 0;padding:20px;z-index:16;max-height:85vh;overflow:auto}
+.sheet h3{margin-bottom:8px}
+.sheet textarea{min-height:120px}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));z-index:10}
+nav button{background:none;border:none;color:var(--mut);font-size:.68rem;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 2px;border-radius:10px}
+nav button span{font-size:20px}
+nav button.on{color:var(--accent)}
+.view{display:none}.view.on{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Тихий бюджет</h1><div><button class="hbtn" onclick="toggleTheme()">◑</button> <button class="hbtn" onclick="openSettings()">⚙️</button></div></header>
+<div class="mrow"><button class="mbtn" onclick="shiftMonth(-1)">‹</button><div class="month" id="mlabel"></div><button class="mbtn" onclick="shiftMonth(1)">›</button></div>
+
+<div class="view on" id="v-today">
+ <div class="card">
+  <div class="cap">Остаток месяца</div>
+  <div class="big" id="big"></div>
+  <div class="sub" id="sub1"></div>
+  <div class="dep-line" id="depline"></div>
+  <div class="btnrow"><button class="btn main" onclick="addExpSheet()">+ Трата</button><button class="btn ghost" onclick="addIncSheet()">+ Доход</button></div>
+ </div>
+ <div class="dcard">
+  <div class="drow"><div><div class="dtitle">Ипотечный вклад</div><div class="dsub">Пополнение <span id="depinfo"></span> · списание <span id="depday"></span> числа</div></div><div class="dval" id="depval"></div></div>
+  <div class="btnrow"><button class="btn main" onclick="topUpSheet()">Пополнить</button><button class="btn ghost" onclick="payMortgage()">Списать ипотеку</button></div>
+ </div>
+ <div class="shead"><h2>Сегодня</h2></div>
+ <div id="todaylist"></div>
+</div>
+
+<div class="view" id="v-exp">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addExpSheet()">+ Добавить трату</button></div>
+ <div id="explist"></div>
+</div>
+
+<div class="view" id="v-inc">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addIncSheet()">+ Добавить доход</button></div>
+ <div id="inclist"></div>
+</div>
+
+<div class="view" id="v-pay">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addPaySheet()">+ Добавить платёж</button></div>
+ <div id="paylist"></div>
+</div>
+
+<div class="view" id="v-order">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addOrderSheet()">+ Добавить заказ</button></div>
+ <div id="orderlist"></div>
+</div>
+
+<div class="view" id="v-diary">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addDiarySheet()">+ Записать позыв</button></div>
+ <div id="diarylist"></div>
+</div>
+
+<div class="view" id="v-sub">
+ <div class="btnrow" style="margin-bottom:14px"><button class="btn main" onclick="addSubSheet()">+ Добавить подписку</button></div>
+ <div id="sublist"></div>
+</div>
+
+<div class="view" id="v-rep">
+ <div class="card"><div class="cap">Траты по категориям, за месяц</div><div id="rep1"></div></div>
+ <div class="card"><div class="cap">Доходы по категориям, за месяц</div><div id="rep2"></div></div>
+ <div class="card"><div class="cap">Лимиты по категориям</div><div id="rep3"></div></div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="sheet-bg" id="bg" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"></div>
+
+<nav>
+ <button class="on" data-v="today" onclick="go('today')"><span>🌱</span>Сегодня</button>
+ <button data-v="exp" onclick="go('exp')"><span>🛒</span>Траты</button>
+ <button data-v="inc" onclick="go('inc')"><span>💵</span>Доходы</button>
+ <button data-v="pay" onclick="go('pay')"><span>🏠</span>Оплаты</button>
+ <button data-v="order" onclick="go('order')"><span>📦</span>Заказы</button>
+ <button data-v="diary" onclick="go('diary')"><span>🧠</span>Дневник</button>
+ <button data-v="sub" onclick="go('sub')"><span>🔔</span>Подписки</button>
+ <button data-v="rep" onclick="go('rep')"><span>📊</span>Отчёты</button>
+</nav>
+
+<script>
+const CATS_EXP=['Еда','Продукты ребёнку','Транспорт','Дом','Здоровье','Одежда','Ребёнок','Легальные хотелки','Другое'];
+const CATS_INC=['Муж','Пособие','Подарок','Другое'];
+function defState(){return{theme:'dark',exp:[],inc:[],pays:[{name:'Ипотека',amt:1900,day:27,fromDep:true,paidM:[]}],dep:{bal:0,monthly:9100,day:27},limits:{},orders:[],diary:[],subs:[]}}
+let S;
+try{S=JSON.parse(localStorage.getItem('quiet_budget_v2'))}catch(e){}
+if(!S||!S.dep)S=defState();
+S.pays=(S.pays||[]).map(p=>Object.assign({paidM:[]},p));
+if(!S.dep.day)S.dep.day=27;
+function save(){localStorage.setItem('quiet_budget_v2',JSON.stringify(S))}
+let mOff=0;
+function mdate(){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()+mOff);return d}
+function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+function key(d){return d.getFullYear()+'-'+(d.getMonth()+1)}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2200)}
+function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));document.getElementById('v-'+v).classList.add('on');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));render()}
+function shiftMonth(n){mOff+=n;render()}
+function toggleTheme(){S.theme=S.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=S.theme;save()}
+function openSheet(h){document.getElementById('sheet').innerHTML=h;document.getElementById('bg').classList.add('on')}
+function closeSheet(){document.getElementById('bg').classList.remove('on');render()}
+function pickCat(list,onOk){let h='<h3>Категория</h3><div class="chips">';list.forEach((c,i)=>{h+=`<button class="chip" onclick="pickCatPick(${i})">${c}</button>`});h+='</div>';window._cats=list;window._pickCb=onOk;openSheet(h)}
+function pickCatPick(i){closeSheet();window._pickCb(window._cats[i])}
+function addExpSheet(){openSheet(`<h3>Новая трата</h3>
+<label>Сумма</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<label>Категория</label><div class="chips" id="f-cats"></div>
+<label>Комментарий (необязательно)</label><input id="f-note" placeholder="например: продукты на неделю">
+<label>Дата</label><input id="f-date" type="date" value="${new Date().toISOString().slice(0,10)}">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="saveExp()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`);window._cat=CATS_EXP[0];catChips('f-cats',CATS_EXP)}
+function catChips(id,list){const el=document.getElementById(id);el.innerHTML=list.map(c=>`<button class="chip ${c===window._cat?'on':''}" onclick="window._cat='${c}';catChips('${id}',${JSON.stringify(list).replace(/"/g,'&quot;')})">${c}</button>`).join('')}
+function saveExp(){const a=parseFloat(document.getElementById('f-amt').value);if(!a){toast('Введите сумму');return}S.exp.push({d:document.getElementById('f-date').value,amt:a,cat:window._cat,note:document.getElementById('f-note').value||''});save();closeSheet();toast('Трата записана')}
+function addIncSheet(){openSheet(`<h3>Новый доход</h3>
+<label>Сумма</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<label>Категория</label><div class="chips" id="f-cats"></div>
+<label>Комментарий (необязательно)</label><input id="f-note">
+<label>Дата</label><input id="f-date" type="date" value="${new Date().toISOString().slice(0,10)}">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="saveInc()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`);window._cat=CATS_INC[0];catChips('f-cats',CATS_INC)}
+function saveInc(){const a=parseFloat(document.getElementById('f-amt').value);if(!a){toast('Введите сумму');return}S.inc.push({d:document.getElementById('f-date').value,amt:a,cat:window._cat,note:document.getElementById('f-note').value||''});save();closeSheet();toast('Доход записан')}
+function addPaySheet(){openSheet(`<h3>Новый платёж</h3>
+<label>Название</label><input id="f-name" placeholder="например: интернет">
+<label>Сумма</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<label>День месяца</label><input id="f-day" type="number" min="1" max="31" value="1">
+<label>Откуда платить</label><div class="chips" id="f-src"></div>
+<button class="btn main" style="width:100%;margin-top:16px" onclick="savePay()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`);window._src='Обычные';window._srcs=['Обычные','Со вклада'];catChips('f-src',['Обычные','Со вклада']);window._cat='Обычные'}
+function savePay(){const n=document.getElementById('f-name').value||'Платёж';const a=parseFloat(document.getElementById('f-amt').value);const d=parseInt(document.getElementById('f-day').value)||1;S.pays.push({name:n,amt:a||0,day:d,fromDep:window._cat==='Со вклада',paidM:[]});save();closeSheet();toast('Платёж добавлен')}
+function addOrderSheet(){openSheet(`<h3>Новый заказ</h3>
+<label>Что заказали</label><input id="f-name" placeholder="например: куртка с озона">
+<label>Сумма</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<label>Дата</label><input id="f-date" type="date" value="${new Date().toISOString().slice(0,10)}">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="saveOrder()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`)}
+function saveOrder(){const n=document.getElementById('f-name').value||'Заказ';const a=parseFloat(document.getElementById('f-amt').value)||0;S.orders.push({d:document.getElementById('f-date').value,name:n,amt:a});save();closeSheet();toast('Заказ записан')}
+function addDiarySheet(){openSheet(`<h3>Позыв потратить</h3>
+<label>На что тянуло</label><input id="f-name" placeholder="например: новая сумка">
+<label>Сколько было бы потрачено</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<label>Как себя перебить (необязательно)</label><textarea id="f-note" placeholder="пошла заварила чай, перечитала дневник..."></textarea>
+<label>Дата</label><input id="f-date" type="date" value="${new Date().toISOString().slice(0,10)}">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="saveDiary()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`)}
+function saveDiary(){const n=document.getElementById('f-name').value||'Позыв';const a=parseFloat(document.getElementById('f-amt').value)||0;S.diary.push({d:document.getElementById('f-date').value,name:n,amt:a,note:document.getElementById('f-note').value||''});save();closeSheet();toast('Записано в дневник')}
+function addSubSheet(){openSheet(`<h3>Новая подписка</h3>
+<label>Название</label><input id="f-name" placeholder="например: музыка">
+<label>Сумма в месяц</label><input id="f-amt" type="number" inputmode="decimal" placeholder="0">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="saveSub()">Сохранить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`)}
+function saveSub(){const n=document.getElementById('f-name').value||'Подписка';const a=parseFloat(document.getElementById('f-amt').value)||0;S.subs.push({name:n,amt:a});save();closeSheet();toast('Подписка добавлена')}
+function topUpSheet(){openSheet(`<h3>Пополнить вклад</h3>
+<label>Сумма пополнения</label><input id="f-amt" type="number" inputmode="decimal" placeholder="${S.dep.monthly}">
+<button class="btn main" style="width:100%;margin-top:16px" onclick="doTopUp()">Пополнить</button>
+<button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`)}
+function doTopUp(){const a=parseFloat(document.getElementById('f-amt').value);if(!a){toast('Введите сумму');return}S.dep.bal+=a;save();closeSheet();toast('Вклад пополнен на '+fmt(a))}
+function mortgageDue(){const m=mdate();const k=key(m);return S.pays.filter(p=>p.fromDep&&!p.paidM.includes(k))}
+function payMortgage(){const due=mortgageDue();if(!due.length){toast('Ипотека в этом месяце уже списана');return}let need=due.reduce((s,p)=>s+p.amt,0);if(S.dep.bal<need){toast('На вкладе не хватает: нужно '+fmt(need)+', есть '+fmt(S.dep.bal));return}const m=mdate();due.forEach(p=>{p.paidM.push(key(m))});S.dep.bal-=need;save();toast('Списано со вклада: '+fmt(need))}
+function delExp(i){S.exp.splice(i,1);save();render()}
+function delInc(i){S.inc.splice(i,1);save();render()}
+function delPay(i){S.pays.splice(i,1);save();render()}
+function delOrder(i){S.orders.splice(i,1);save();render()}
+function delDiary(i){S.diary.splice(i,1);save();render()}
+function delSub(i){S.subs.splice(i,1);save();render()}
+function inMonth(arr){const m=mdate();const k=key(m);return arr.filter(x=>x.d.startsWith(k.padEnd(7,'-')))}
+function totals(){
+ const m=mdate();const k=key(m);
+ const inc=S.inc.filter(x=>x.d.startsWith(k)).reduce((s,x)=>s+x.amt,0);
+ const exp=S.exp.filter(x=>x.d.startsWith(k)).reduce((s,x)=>s+x.amt,0);
+ let oblig=0;
+ S.pays.forEach(p=>{
+   if(p.fromDep){if(p.paidM.includes(k))oblig+=0;else oblig+=0;/* ипотека со вклада не входит в кэш */}
+   else{const dayNow=(mOff===0)?new Date().getDate():99;
+     if(p.day<=dayNow||mOff!==0)oblig+=p.amt}
+ });
+ const depTop=S.dep.bal>0?0:0;
+ return{inc,exp,oblig}
+}
+function render(){
+ const m=mdate();
+ const MON=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+ document.getElementById('mlabel').textContent=MON[m.getMonth()]+' '+m.getFullYear();
+ const k=key(m);
+ const inc=S.inc.filter(x=>x.d.startsWith(k)).reduce((s,x)=>s+x.amt,0);
+ const exp=S.exp.filter(x=>x.d.startsWith(k)).reduce((s,x)=>s+x.amt,0);
+ let oblig=0;const dueList=[];
+ S.pays.forEach(p=>{
+  if(p.fromDep){if(!p.paidM.includes(k))dueList.push(p)}
+  else{const dayNow=(mOff===0)?new Date().getDate():99;if(p.day<=dayNow)oblig+=p.amt}
+ });
+ const bal=inc-oblig-exp;
+ const big=document.getElementById('big');
+ big.textContent=(bal<0?'−':'')+fmt(Math.abs(bal)).replace('-','');
+ big.className='big '+(bal<0?'neg':'pos');
+ document.getElementById('sub1').textContent='Приходы '+fmt(inc)+' · обязательные '+fmt(oblig)+' · траты '+fmt(exp);
+ document.getElementById('depline').textContent=dueList.length?('Ипотека ждёт списания со вклада: '+fmt(dueList.reduce((s,p)=>s+p.amt,0))):'';
+ document.getElementById('depinfo').textContent=fmt(S.dep.monthly);
+ document.getElementById('depday').textContent=S.dep.day;
+ document.getElementById('depval').textContent=fmt(S.dep.bal);
+ // today list
+ const todayStr=new Date().toISOString().slice(0,10);
+ const tl=S.exp.filter(x=>x.d===todayStr).map((x,i)=>`<div class="item"><div><b>−${fmt(x.amt)}</b><div class="ic">${x.cat}${x.note?' · '+x.note:''}</div></div><button class="del" onclick="delExp(${S.exp.indexOf(x)})">✕</button></div>`).join('');
+ document.getElementById('todaylist').innerHTML=tl||'<div class="empty">Сегодня трат пока нет 🌿</div>';
+ // lists
+ const mk=(arr,f)=>arr.length?arr.map(f).join(''):'<div class="empty">Пока пусто</div>';
+ document.getElementById('explist').innerHTML=mk(S.exp.filter(x=>x.d.startsWith(k)),x=>`<div class="item"><div><b>−${fmt(x.amt)}</b><span class="tag">${x.cat}</span><div class="ic">${x.d.split('-').reverse().join('.')}${x.note?' · '+x.note:''}</div></div><button class="del" onclick="delExp(${S.exp.indexOf(x)})">✕</button></div>`);
+ document.getElementById('inclist').innerHTML=mk(S.inc.filter(x=>x.d.startsWith(k)),x=>`<div class="item"><div><b>+${fmt(x.amt)}</b><span class="tag">${x.cat}</span><div class="ic">${x.d.split('-').reverse().join('.')}${x.note?' · '+x.note:''}</div></div><button class="del" onclick="delInc(${S.inc.indexOf(x)})">✕</button></div>`);
+ document.getElementById('paylist').innerHTML=mk(S.pays,p=>{const paid=p.fromDep?p.paidM.includes(k):true;return `<div class="item"><div><b>${p.name}</b> ${p.fromDep?'<span class="tag">со вклада</span>':''}<div class="ic">${p.day}-е число каждого месяца · ${fmt(p.amt)}${paid?' · оплачено':''}</div></div>${p.fromDep&&!paid?`<button class="mini" onclick="payMortgage()">Списать</button>`:''}<button class="del" onclick="delPay(${S.pays.indexOf(p)})">✕</button></div>`});
+ document.getElementById('orderlist').innerHTML=mk(S.orders.filter(x=>x.d.startsWith(k)),x=>`<div class="item"><div><b>${x.name}</b><div class="ic">${x.d.split('-').reverse().join('.')} · ${fmt(x.amt)}</div></div><button class="del" onclick="delOrder(${S.orders.indexOf(x)})">✕</button></div>`);
+ document.getElementById('diarylist').innerHTML=mk(S.diary.filter(x=>x.d.startsWith(k)).slice().reverse(),x=>`<div class="item"><div><b>${x.name}</b> <span class="tag">${fmt(x.amt)} не потрачено</span><div class="ic">${x.d.split('-').reverse().join('.')}${x.note?' · '+x.note:''}</div></div><button class="del" onclick="delDiary(${S.diary.indexOf(x)})">✕</button></div>`);
+ document.getElementById('sublist').innerHTML=mk(S.subs,x=>`<div class="item"><div><b>${x.name}</b><div class="ic">${fmt(x.amt)} в месяц</div></div><button class="del" onclick="delSub(${S.subs.indexOf(x)})">✕</button></div>`);
+ // reports
+ const byCat=(arr)=>{const o={};arr.forEach(x=>{o[x.cat]=(o[x.cat]||0)+x.amt});return Object.entries(o).sort((a,b)=>b[1]-a[1])};
+ const ex=byCat(S.exp.filter(x=>x.d.startsWith(k)));
+ const incm=byCat(S.inc.filter(x=>x.d.startsWith(k)));
+ const sum=a=>a.reduce((s,x)=>s+x[1],0);
+ const totE=sum(ex),totI=sum(incm);
+ document.getElementById('rep1').innerHTML=ex.length?ex.map(([c,v])=>`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${c}</span><b>${fmt(v)}</b></div><div class="bar"><i style="width:${totE?Math.round(v/totE*100):0}%"></i></div></div>`).join(''):'<div class="empty">Трат за месяц нет</div>';
+ document.getElementById('rep2').innerHTML=incm.length?incm.map(([c,v])=>`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${c}</span><b>${fmt(v)}</b></div><div class="bar"><i style="width:${totI?Math.round(v/totI*100):0}%"></i></div></div>`).join(''):'<div class="empty">Доходов за месяц нет</div>';
+ document.getElementById('rep3').innerHTML=CATS_EXP.filter(c=>S.limits[c]).length?CATS_EXP.filter(c=>S.limits[c]).map(c=>{const spent=(S.exp.filter(x=>x.d.startsWith(k)&&x.cat===c).reduce((s,x)=>s+x.amt,0));const lim=S.limits[c];const pct=Math.min(100,Math.round(spent/lim*100));return `<div style="margin:10px 0"><div style="display:flex;justify-content:space-between"><span>${c}</span><b>${fmt(spent)} из ${fmt(lim)}</b></div><div class="bar"><i style="width:${pct}%;background:${pct>90?'var(--bad)':'var(--accent)'}"></i></div></div>`}).join(''):'<div class="empty">Лимиты не заданы — установите их в ⚙️</div>';
+}
+function openSettings(){
+ const limRows=CATS_EXP.map(c=>`<label>${c}</label><input class="lim" data-c="${c}" type="number" value="${S.limits[c]||''}" placeholder="лимит, ₽">`).join('');
+ openSheet(`<h3>Настройки</h3>
+ <label>Пополнение вклада в месяц</label><input id="s-monthly" type="number" value="${S.dep.monthly}">
+ <label>День списания ипотеки</label><input id="s-day" type="number" min="1" max="31" value="${S.dep.day}">
+ <button class="btn main" style="width:100%;margin-top:16px" onclick="saveSettings()">Сохранить</button>
+ <div style="height:14px"></div>
+ <button class="btn ghost" style="width:100%" onclick="exportData()">Скачать JSON</button>
+ <div style="height:8px"></div>
+ <button class="btn ghost" style="width:100%" onclick="importAsk()">Загрузить копию</button>
+ <div style="height:8px"></div>
+ <button class="btn ghost" style="width:100%;color:var(--bad)" onclick="wipe()">Стереть все данные</button>
+ <div style="height:20px"></div>`);
+}
+function saveSettings(){S.dep.monthly=parseFloat(document.getElementById('s-monthly').value)||9100;S.dep.day=Math.min(31,Math.max(1,parseInt(document.getElementById('s-day').value)||27));const nl={};document.querySelectorAll('.lim').forEach(i=>{if(i.value)nl[i.dataset.c]=parseFloat(i.value)});S.limits=nl;save();closeSheet();render();toast('Настройки сохранены')}
+function exportData(){const txt=JSON.stringify(S,null,1);openSheet(`<h3>Копия данных</h3><div class="sub">Скопируйте текст и сохраните в заметки</div><textarea id="exp" style="width:100%;margin-top:10px">${txt}</textarea><button class="btn main" style="width:100%;margin-top:12px" onclick="copyExp()">Скопировать</button><button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Закрыть</button>`)}
+function copyExp(){const t=document.getElementById('exp');t.select();try{navigator.clipboard.writeText(t.value);toast('Скопировано')}catch(e){toast('Выделите и скопируйте вручную')}}
+function importAsk(){openSheet(`<h3>Загрузить копию</h3><textarea id="imp" placeholder="вставьте текст копии"></textarea><button class="btn main" style="width:100%;margin-top:12px" onclick="doImport()">Загрузить</button><button class="btn ghost" style="width:100%;margin-top:8px" onclick="closeSheet()">Отмена</button>`)}
+function doImport(){try{S=fix(JSON.parse(document.getElementById('imp').value));save();closeSheet();render();toast('Копия загружена')}catch(e){toast('Не удалось прочитать копию')}}
+function fix(o){const d=defState();o=o||{};d.theme=o.theme||'dark';d.exp=o.exp||[];d.inc=o.inc||[];d.pays=(o.pays||[]).map(p=>Object.assign({paidM:[]},p));d.dep=Object.assign(d.dep,o.dep||{});if(!d.dep.day)d.dep.day=27;d.limits=o.limits||{};d.orders=o.orders||[];d.diary=o.diary||[];d.subs=o.subs||[];return d}
+function wipe(){if(!confirm('Точно стереть все данные? Их не вернуть.'))return;S=defState();save();closeSheet();render()}
+window.addEventListener('load',()=>{document.documentElement.dataset.theme=S.theme||'dark';render()});
+</script>
+</body>
+</html>
